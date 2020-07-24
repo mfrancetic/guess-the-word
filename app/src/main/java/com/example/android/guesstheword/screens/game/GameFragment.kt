@@ -16,7 +16,10 @@
 
 package com.example.android.guesstheword.screens.game
 
+import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +31,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.example.android.guesstheword.R
 import com.example.android.guesstheword.databinding.GameFragmentBinding
+import androidx.core.content.getSystemService as getSystemService1
 
 /**
  * Fragment where the game is played
@@ -61,6 +65,14 @@ class GameFragment : Fragment() {
         // by setting a lifecycle owner, we can use LiveData to automatically update the data binding layouts
         binding.lifecycleOwner = this
 
+        // Buzzes when triggered with different buzz events
+        viewModel.eventBuzz.observe(viewLifecycleOwner, Observer { buzzType ->
+            if (buzzType != GameViewModel.BuzzType.NO_BUZZ) {
+                buzz(buzzType.pattern)
+                viewModel.onBuzzComplete()
+            }
+        })
+
         viewModel.eventGameFinish.observe(viewLifecycleOwner, Observer { isFinished ->
             if (isFinished) {
                 val currentScore = viewModel.score.value ?: 0;
@@ -70,5 +82,17 @@ class GameFragment : Fragment() {
             }
         })
         return binding.root
+    }
+
+    private fun buzz(pattern: LongArray) {
+        val buzzer = activity?.getSystemService1<Vibrator>()
+        buzzer?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                buzzer.vibrate(VibrationEffect.createWaveform(pattern, -1))
+            } else {
+                //deprecated in API 26
+                buzzer.vibrate(pattern, -1)
+            }
+        }
     }
 }
