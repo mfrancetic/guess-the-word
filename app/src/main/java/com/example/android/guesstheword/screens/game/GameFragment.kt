@@ -54,12 +54,10 @@ class GameFragment : Fragment() {
         // Re-created activities receive the same GameViewModel instance created by the first activity.
         viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
 
-        binding.correctButton.setOnClickListener {
-            viewModel.onCorrect()
-        }
-        binding.skipButton.setOnClickListener {
-            viewModel.onSkip()
-        }
+        // Set the viewmodel for databinding - this allows the bound layout access to all of the
+        // OnClickListener setup from here
+        // data in the VieWModel
+        binding.gameViewModel = viewModel;
 
         // setup observer relationship
         viewModel.score.observe(viewLifecycleOwner, Observer { newScore ->

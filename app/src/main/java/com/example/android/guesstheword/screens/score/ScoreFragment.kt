@@ -54,13 +54,14 @@ class ScoreFragment : Fragment() {
         viewModelFactory = ScoreViewModelFactory(scoreFragmentArgs.score)
         viewModel = ViewModelProvider(this, viewModelFactory).get(ScoreViewModel::class.java)
 
+        // Set the viewmodel for databinding - this allows the bound layout access to all of the
+        // OnClickListener setup from here
+        // data in the VieWModel
+        binding.scoreViewModel = viewModel;
+
         viewModel.score.observe(viewLifecycleOwner, Observer { newScore ->
             binding.scoreText.text = newScore.toString()
         })
-
-        binding.playAgainButton.setOnClickListener {
-            viewModel.onPlayAgain();
-        }
 
         viewModel.eventPlayAgain.observe(viewLifecycleOwner, Observer { playAgain ->
             if (playAgain) {
