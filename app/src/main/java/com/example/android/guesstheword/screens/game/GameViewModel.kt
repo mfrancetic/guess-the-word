@@ -11,24 +11,29 @@ class GameViewModel : ViewModel() {
     // The current word - internal
     // MutableLiveData - LiveData that can be modified and changed (unlike LiveData)
     private val _word = MutableLiveData<String>();
+
     // external
     val word: LiveData<String>
         get() = _word;
 
     // The current score - internal
     private val _score = MutableLiveData<Int>();
+
     // external
     val score: LiveData<Int>
         get() = _score
 
-
+    // event for game finished
+    private val _eventGameFinish = MutableLiveData<Boolean>()
+    val eventGameFinish: LiveData<Boolean>
+        get() = _eventGameFinish;
 
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
 
 
     init {
-        Timber.i("GameViewModel created")
+        _eventGameFinish.value = false
         resetList()
         nextWord()
         _score.value = 0;
@@ -36,7 +41,6 @@ class GameViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        Timber.i("GameViewModel destroyed")
     }
 
     /**
@@ -75,7 +79,8 @@ class GameViewModel : ViewModel() {
     private fun nextWord() {
         //Select and remove a word from the list
         if (wordList.isEmpty()) {
-            // gameFinished()
+            // game has finished
+            _eventGameFinish.value = true
         } else {
             _word.value = wordList.removeAt(0)
         }
@@ -92,5 +97,11 @@ class GameViewModel : ViewModel() {
     fun onCorrect() {
         _score.value = (_score.value)?.plus(1)
         nextWord()
+    }
+
+    // avoids that when we e.g. rotate the phone, the event is triggered again
+    // method for completed events
+    fun onGameFinishComplete() {
+        _eventGameFinish.value = false;
     }
 }
