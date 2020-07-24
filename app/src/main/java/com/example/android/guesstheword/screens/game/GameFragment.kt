@@ -58,18 +58,11 @@ class GameFragment : Fragment() {
         // OnClickListener setup from here
         // data in the VieWModel
         binding.gameViewModel = viewModel;
-
-        // setup observer relationship
-        viewModel.score.observe(viewLifecycleOwner, Observer { newScore ->
-            binding.scoreText.text = newScore.toString()
-        })
-
-        viewModel.word.observe(viewLifecycleOwner, Observer { newWord ->
-            binding.wordText.text = newWord
-        })
+        // by setting a lifecycle owner, we can use LiveData to automatically update the data binding layouts
+        binding.lifecycleOwner = this
 
         viewModel.currentTime.observe(viewLifecycleOwner, Observer { mewTime ->
-                binding.timerText.text = DateUtils.formatElapsedTime(mewTime);
+            binding.timerText.text = DateUtils.formatElapsedTime(mewTime);
         })
 
         viewModel.eventGameFinish.observe(viewLifecycleOwner, Observer { isFinished ->
