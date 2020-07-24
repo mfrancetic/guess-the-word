@@ -61,10 +61,6 @@ class GameFragment : Fragment() {
         // by setting a lifecycle owner, we can use LiveData to automatically update the data binding layouts
         binding.lifecycleOwner = this
 
-        viewModel.currentTime.observe(viewLifecycleOwner, Observer { mewTime ->
-            binding.timerText.text = DateUtils.formatElapsedTime(mewTime);
-        })
-
         viewModel.eventGameFinish.observe(viewLifecycleOwner, Observer { isFinished ->
             if (isFinished) {
                 val currentScore = viewModel.score.value ?: 0;
